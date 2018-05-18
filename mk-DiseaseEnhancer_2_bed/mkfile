@@ -1,0 +1,64 @@
+MKSHELL=/bin/bash
+
+## DESCRIPTION
+##
+## mk module to convert EnhanceDisease database *.tsv to bed file
+
+## USAGE:
+## Alternative 1: Single target execution.
+##      `mk <SPECIFIC_TARGET>`; where SPECIFIC_TARGET is any line printed by the `/bin/create-targets` script in this module
+##
+## Alternative 2: Multiple target tandem execution.
+##      `bin/targets | xrags mk`
+##
+## Alternative 3: Multiple target parallel execution. NOTE: requires HTCondor with the right configuration
+##      `condor submit'
+##  AUTHOR:
+##      Eugenia Zarza (eugenia.zarza@gmail.com), for Winter Genomics (http://www.wintergenomics.com/) - 2018
+
+## Load configurations from file
+## Config file contains paths to xhmm executables
+
+
+# Index bed file
+# ============================================
+#
+results/%.bed.gz.tbi: results/%.bed.gz
+	set -x
+	mkdir -p $(dirname $target)
+	echo "Indexing bed..."
+	echo $target
+	echo $prereq
+	tabix \
+		-h -p bed results/$stem.bed.gz
+#
+#Compress bed file
+# ============================================
+#
+results/%.bed.gz: results/%.bed
+	set -x
+	mkdir -p $(dirname $target)
+	echo "Compressing bed..."
+	echo $target
+	echo $prereq
+	bgzip -c \
+		results/$stem.bed > results/$stem.bed.gz.build \
+	&&mv results/$stem.bed.gz.build results/$stem.bed.gz
+#	
+#Create bed file from EnhancerDisease text file
+# ============================================
+#
+results/%.bed: data/%.txt
+	set -x
+        mkdir -p $(dirname $target)
+        echo "Creating bed..."
+        echo $target
+        echo $prereq
+	database_name=$(basename $prereq)
+	#create header
+	echo "#track name=\"DiseaseEnhancer\" description=\"bed file converted from" $database_name "(http://biocc.hrbmu.edu.cn/DiseaseEnhancer/)" $Genome_Version". Columns are:chromosome, start, end, gene_symbol, disease,DataBase_ID\"" >> results/$stem.bed.build
+	#get relevant columns from original dataset, eliminate spaces and loci without coordinates, sort file by chromosome
+	awk 'BEGIN {FS="\t"}; {print $2"\t"$3"\t"$4"\t"$5","$6","$1"[DisEnhancer]"}' data/$stem.txt | \
+	sed 's/ /_/g' | sed '/^NA/d' | sort -k1,1 -k2,2n -k3,3n -t$'\t' >> results/$stem.bed.build \
+	&&mv results/$stem.bed.build results/$stem.bed	
+

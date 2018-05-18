@@ -1,0 +1,81 @@
+MKSHELL=/bin/bash
+
+## DESCRIPTION
+##
+## mk module to convert ORegAnno database *.tsv a bed file
+
+## USAGE:
+## Alternative 1: Single target execution.
+##      `mk <SPECIFIC_TARGET>`; where SPECIFIC_TARGET is any line printed by the `/bin/create-targets` script in this module
+##
+## Alternative 2: Multiple target tandem execution.
+##      `bin/targets | xrags mk`
+##
+## Alternative 3: Multiple target parallel execution. NOTE: requires HTCondor with the right configuration
+##      `condor submit'
+##  AUTHOR:
+##      Eugenia Zarza (eugenia.zarza@gmail.com), for Winter Genomics (http://www.wintergenomics.com/) - 2018
+
+## Load configurations from file
+## Config file contains paths to xhmm executables
+< config.mk
+
+# Index bed file
+# ============================================
+#
+results/%.$Genome_Version.bed.gz.tbi: results/%.$Genome_Version.bed.gz
+	set -x
+	mkdir -p $(dirname $target)
+	echo "Indexing bed..."
+	echo $target
+	echo $prereq
+	tabix \
+		-h -p bed results/$stem.$Genome_Version.bed.gz
+#
+# Compress bed file
+# ============================================
+#
+results/%.$Genome_Version.bed.gz: results/%.$Genome_Version.bed
+	set -x
+	mkdir -p $(dirname $target)
+	echo "Compress bed..."
+	echo $target
+	echo $prereq
+	bgzip \
+		-c results/$stem.$Genome_Version.bed > results/$stem.$Genome_Version.bed.gz.build \
+	&& mv results/$stem.$Genome_Version.bed.gz.build results/$stem.$Genome_Version.bed.gz
+#
+#Create bed file
+# ============================================
+#
+results/%.$Genome_Version.bed: results/%.$Genome_Version.tsv
+	set -x
+	mkdir -p $(dirname $target)
+	echo "get relevant data from tsv and convert to bed..."
+	echo $target
+	echo $prereq
+	database_name=$(basename $prereq | cut -d. -f1)
+	#create header
+	echo "#track name=\"ORegAnno\" description=\"bed file" $database_name.tsv "obtained from oreganno.org for Homo sapiens" $Genome_Version". Columns are:chromosome, start,end, gene_symbol, strand, type, experimental_outcome, database_ID, NCBI\"" > results/$stem.$Genome_Version.bed.build
+	
+	#extract columns of interest and add database delimiter, 
+	awk 'BEGIN {FS="\t"}; {print $16"\t"$17"\t"$18"\t"$5","$15","$4","$3","$1","$12"[ORegAnno]"}' results/$stem.$Genome_Version.tsv | \
+	#remove extra spaces after tab 
+	sed 's/\t \+/\t/g'| \
+	#replace spaces by underscore
+	sed 's/ /_/g' | \
+	#sort according to chromosome and coordinates,append to file with header
+	sort -k1,1 -k2,2n -k3,3n -t$'\t' >> results/$stem.$Genome_Version.bed.build \
+	&& mv results/$stem.$Genome_Version.bed.build results/$stem.$Genome_Version.bed
+
+#extract information only for specific genome version
+# ============================================
+#
+results/%.$Genome_Version.tsv: data/%.tsv
+        set -x
+        mkdir -p $(dirname $target)
+        echo "getting genomic features..."
+        echo $target
+        echo $prereq
+        grep "$Genome_Version" data/$stem.tsv > results/$stem.$Genome_Version.tsv.build \
+	&& mv results/$stem.$Genome_Version.tsv.build results/$stem.$Genome_Version.tsv

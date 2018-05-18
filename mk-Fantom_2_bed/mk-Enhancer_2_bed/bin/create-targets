@@ -1,0 +1,16 @@
+#!/bin/bash
+##
+## DESCRIPTION:
+##      Script to print required mk targets to STDOUT.
+## USAGE:
+##      bin/create-targets
+
+# start from a Disease Enhancer database txt file
+#
+
+find -L data/ \
+        -name '*.bed' \
+| sed \
+        -e "s#^data/#results/#" \
+        -e "s#.bed#.bed.gz.tbi#"
+
