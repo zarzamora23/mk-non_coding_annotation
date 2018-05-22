@@ -7,6 +7,7 @@ results/%.vep.$DESCRIPTION.vcf: results/%.vep.$DESCRIPTION.tsv
 	mkdir -p `dirname $target`
 	mkdir -p QC
 	$VEP -i data/$stem.vcf.gz -o $target.build \
+		-custom $ANNOTATION_DB,$DESCRIPTION,bed,overlap,0 \
 		--stats_file QC/$stem"_stats.txt" \
 		--stats_text \
 		--cache --offline \
@@ -14,7 +15,7 @@ results/%.vep.$DESCRIPTION.vcf: results/%.vep.$DESCRIPTION.tsv
 		--species "homo_sapiens" \
 		--af --af_1kg \
 		--gene_phenotype \
-		--canonical --check_existing \
+		--canonical --check_existing --exclude_null_alleles \
 		--pick \
 		--vcf_info_field ANN \
 		--numbers --regulatory \
