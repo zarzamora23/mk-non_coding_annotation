@@ -1,0 +1,18 @@
+#!/bin/bash
+##
+## DESCRIPTION:
+##      Script to print required mk targets to STDOUT.
+## USAGE:
+##      bin/create-targets
+
+# start from a Disease Enhancer database txt file
+#
+# read in the config file to get genome version. Read config.mk for more info
+
+# create the target variables
+find -L data/ \
+        -name '*.vcf.gz' \
+| sed \
+        -e "s#^data/#results/#" \
+        -e "s#.vcf.gz#.vep.custom_reformatted.tsv#"
+

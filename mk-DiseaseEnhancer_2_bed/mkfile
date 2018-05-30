@@ -57,8 +57,8 @@ results/%.bed: data/%.txt
 	database_name=$(basename $prereq)
 	#create header
 	echo "#track name=\"DiseaseEnhancer\" description=\"bed file converted from" $database_name "(http://biocc.hrbmu.edu.cn/DiseaseEnhancer/)" $Genome_Version". Columns are:chromosome, start, end, gene_symbol, disease,DataBase_ID\"" >> results/$stem.bed.build
-	#get relevant columns from original dataset, eliminate spaces and loci without coordinates, sort file by chromosome
+	#get relevant columns from original dataset, eliminate spaces and replace ", " by "/", and loci without coordinates, sort file by chromosome
 	awk 'BEGIN {FS="\t"}; {print $2"\t"$3"\t"$4"\t"$5","$6","$1"[DisEnhancer]"}' data/$stem.txt | \
-	sed 's/ /_/g' | sed '/^NA/d' | sort -k1,1 -k2,2n -k3,3n -t$'\t' >> results/$stem.bed.build \
+	sed 's/, /\//g' | sed 's/ /_/g' | sed '/^NA/d' | sort -k1,1 -k2,2n -k3,3n -t$'\t' >> results/$stem.bed.build \
 	&&mv results/$stem.bed.build results/$stem.bed	
 

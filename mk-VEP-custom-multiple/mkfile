@@ -1,0 +1,147 @@
+MKSHELL=/bin/bash
+
+## DESCRIPTION
+##
+## mk module to execute VEPcustom and to make the outpu file compatible with excel, libreoffice, winter's graphich interface
+
+## USAGE:
+## Alternative 1: Single target execution.
+##      `mk <SPECIFIC_TARGET>`; where SPECIFIC_TARGET is any line printed by the `/bin/create-targets` script in this module
+##
+## Alternative 2: Multiple target tandem execution.
+##      `bin/targets | xargs mk`
+##
+## Alternative 3: Multiple target parallel execution. NOTE: requires HTCondor with the right configuration
+##      `condor submit'
+##  AUTHOR:
+##      Eugenia Zarza (eugenia.zarza@gmail.com), for Winter Genomics (http://www.wintergenomics.com/) - 2018
+
+## Load configurations from file
+## Config file contains paths to VEP executables
+## Output is TSV format
+##A summary stats will be generated, as indicated by the --stats_file flag
+#read in config file
+< config.mk
+
+#Merge output from intermediate steps
+# ============================================
+#
+results/%.vep.custom_reformatted.tsv: results/%.columns.tmp.tsv results/%.FANTOM_Promoter_column.tmp.txt results/%.FANTOM_Enhancer_column.tmp.txt results/%.DiseaseEnhancer_column.tmp.txt results/%.Oregano_column.tmp.txt
+	set -x
+	mkdir -p `dirname $target`
+	mkdir -p QC
+	#Exclude last 4 columns using awk
+	awk -F $'\t' 'BEGIN {OFS=FS} NF{NF-=4};1' results/$stem.columns.tmp.tsv > results/$stem.only_VEP_columns.tmp.tsv
+	#paste vep annotaion and reformatted custom annotation
+	paste results/$stem.only_VEP_columns.tmp.tsv results/$stem.Oregano_column.tmp.txt results/$stem.DiseaseEnhancer_column.tmp.txt results/$stem.FANTOM_Enhancer_column.tmp.txt results/$stem.FANTOM_Promoter_column.tmp.txt > $target.build \
+	&&mv $target.build $target
+	#rm results/$stem.*.tmp.*
+
+#Create one column for FANTOM Promoter database
+# ============================================
+#
+results/%.FANTOM_Promoter_column.tmp.txt: results/%.columns.tmp.tsv
+	set -x
+	mkdir -p `dirname $target`
+	mkdir -p QC
+	##need to delete first line with tail
+	#Create one column for FANTOM Promoter, add FANTOM_Promoter as header and delete [Fantom_promoter]
+	awk -vcol=FANTOM_Promoter -F $'\t' 'BEGIN {OFS=FS} (NR==1){colnum=$vcol;for(i=1;i<=NF;i++)if($(i)==col)colnum=i;} {print $(colnum)}' $prereq \
+	| tail -n +2 | sed '1 i\FANTOM_Promoter' | sed 's/\[Fantom_promoter\]//'g > $target.build \
+	&&mv $target.build $target
+
+#Create one column for FANTOM Enhancer database
+# ============================================
+#
+results/%.FANTOM_Enhancer_column.tmp.txt: results/%.columns.tmp.tsv
+	set -x
+	mkdir -p `dirname $target`
+	mkdir -p QC
+	##need to delete first line with tail
+	#Create one column for FANTOM Enhancer, add FANTOM_Enhancer as header and delete [Fantom_enhancer]
+	awk -vcol=FANTOM_Enhancer -F $'\t' 'BEGIN {OFS=FS} (NR==1){colnum=$vcol;for(i=1;i<=NF;i++)if($(i)==col)colnum=i;} {print $(colnum)}' $prereq \
+	| tail -n +2 | sed '1 i\FANTOM_Enhancer' | sed 's/\[Fantom_enhancer\]//'g > $target.build \
+	&&mv $target.build $target
+	
+#Create one column for Disease Enhancer database
+# ============================================
+#
+results/%.DiseaseEnhancer_column.tmp.txt: results/%.columns.tmp.tsv
+	set -x
+	mkdir -p `dirname $target`
+	mkdir -p QC
+	##need to delete first line with tail
+	##execute an awk loop on the colum labeled as "DiseaseEnhancer" to merge every third comma delimited field into a common field 
+	#Create one column for disease enhancer, add DE to this database fields and delete [DisEnhancer]
+	awk -vcol=DiseaseEnhancer -F $'\t' 'BEGIN {OFS=FS} (NR==1){colnum=$vcol;for(i=1;i<=NF;i++)if($(i)==col)colnum=i;} {print $(colnum)}' $prereq \
+	| tail -n +2 | awk -F, '{for(i=1;i<=NF;i+=3)printf "%s%s", $i, (i+3>=NF?"\t":FS)}; \
+        {for(i=2;i<=NF;i+=3)printf "%s%s", $i, (i+3>NF?"\t":FS)}; \
+        {for(i=3;i<=NF;i+=3)printf "%s%s", $i, (i+3>NF?"\n":FS)}' \
+	| sed '1 i\DEgene_symbol\tDEdisease\tDEdatabase_ID' \
+	| sed 's/\[DisEnhancer\]//g' > $target.build \
+	&&mv $target.build $target
+
+#Create one column for ORegAnno database
+# ============================================
+#
+results/%.Oregano_column.tmp.txt: results/%.columns.tmp.tsv
+	set -x
+	mkdir -p `dirname $target`
+	mkdir -p QC
+	##need to delete first line with tail
+	##execute an awk loop on the colum labeled as "ORegAnno" to merge every sixth comma delimited field into a common field 
+	##create header inserting a line with sed, Add "OREG" to ORegAnno database fields and delete [ORegAnno] from last field
+	awk -vcol=ORegAnno -F $'\t' 'BEGIN {OFS=FS} (NR==1){colnum=$vcol;for(i=1;i<=NF;i++)if($(i)==col)colnum=i;} {print $(colnum)}' $prereq | tail -n +2 | awk -F, '{for(i=1;i<=NF;i+=6)printf "%s%s", $i, (i+6>=NF?"\t":FS)}; \
+        {for(i=2;i<=NF;i+=6)printf "%s%s", $i, (i+6>NF?"\t":FS)}; \
+        {for(i=3;i<=NF;i+=6)printf "%s%s", $i, (i+6>NF?"\t":FS)}; \
+        {for(i=4;i<=NF;i+=6)printf "%s%s", $i, (i+6>NF?"\t":FS)}; \
+        {for(i=5;i<=NF;i+=6)printf "%s%s", $i, (i+6>NF?"\t":FS)}; \
+        {for(i=6;i<=NF;i+=6)printf "%s%s", $i, (i+6>NF?"\n":FS)}' \
+	| sed '1 i\OREGgene_symbol\tOREGstrand\tOREGtype\tOREGexperimental_outcome\tOREGdatabase_ID\tOREGNCBI' \
+	| sed 's/\[ORegAnno\]//g' > $target.build \
+	&&mv $target.build $target
+
+#Delete unnecesary headers and fill empty fields with .
+# ============================================
+#
+
+results/%.columns.tmp.tsv: results/%.vep.custom_multiple.tsv
+	set -x
+	mkdir -p `dirname $target`
+	mkdir -p QC
+	##Print line including pattern and after it(sed), delete symbol #. 
+	######and add '.' to cells without custom annotation (awk)
+        ##awk: define variable specifying column name, delimiting characater, 
+	##search that column and make it equivalent to column number, replace '-' at the start of column and replace with 
+	##'.' as needed , in the working field 
+	sed -n -e '/#Uploaded_variation/,$p' $prereq \
+	| sed -e 's/^#//g' > $target.build \
+	&&mv $target.build $target
+	
+#get custom annotation in tsv
+# ============================================
+#
+
+results/%.vep.custom_multiple.tsv: data/%.vcf.gz
+	set -x
+	mkdir -p `dirname $target`
+	mkdir -p QC
+	$VEP -i data/$stem.vcf.gz -o $target.build \
+ 	-custom $DB01,$DESCRIPTION1,bed,overlap,0 \
+	-custom $DB02,$DESCRIPTION2,bed,overlap,0 \
+	-custom $DB03,$DESCRIPTION3,bed,overlap,0 \
+	-custom $DB04,$DESCRIPTION4,bed,overlap,0 \
+	--stats_file QC/disease_vars.custom_plus.stats.html \
+	--cache --offline \
+	--dir $VEPconfig --assembly $GENOME_VERSION \
+	--species "homo_sapiens" \
+	--af --af_1kg \
+	--gene_phenotype \
+	--canonical \
+	--check_existing \
+	--exclude_null_alleles \
+	--pick --numbers --regulatory \
+	--biotype --tab --buffer_size 10000 \
+	&&mv $target.build $target
+
+
