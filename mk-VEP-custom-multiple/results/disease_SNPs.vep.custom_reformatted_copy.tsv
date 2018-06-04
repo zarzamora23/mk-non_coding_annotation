@@ -1,0 +1,49 @@
+Uploaded_variation	chromosome_start_alleles	Uploaded variation 	CELL_TYPE 	 List of cell types and classifications for regulatory feature
+Location	in standard coordinate format (chr:start or chr:start-end)	Location 		
+Allele	the variant allele used to calculate the consequence (variant in the sample)	Allele 	CCDS 	 the CCDS identifer for this transcript, where applicable
+Gene	Ensembl stable ID of affected gene	Gene 		
+Feature	Ensembl stable ID of feature	Feature 		
+Feature_type	type of feature. Currently one of Transcript, RegulatoryFeature, MotifFeature.	Feature type 	DOMAINS 	 the source and identifer of any overlapping protein domains
+Consequence	consequence type of this variant  (e.g. stop gained, missense, stop lost, frameshift; https://www.ensembl.org/info/genome/variation/predicted_data.html#consequences)	Consequence 		
+cDNA_position	relative position of base pair in cDNA sequence	Position in cDNA 	IND 	 individual name
+CDS_position	relative position of base pair in coding sequence	Position in CDS 	ZYG 	 zygosity of individual genotype at this locus
+Protein_position	relative position of amino acid in protein	Position in protein 	SV 	 IDs of overlapping structural variants
+Amino_acids	only given if the variant affects the protein-coding sequence	Amino acid change 	FREQS 	 Frequencies of overlapping variants used in filtering
+Codons	the alternative codons with the variant base in upper case	Codon change 		
+Existing_variation	known identifier of existing variant	Co-located variation 		
+IMPACT	the impact modifier for the consequence type	IMPACT 		
+DISTANCE	Shortest distance from variant to transcript	DISTANCE 	ASN_AF 	 Frequency of existing variant in 1000 Genomes combined Asian population
+STRAND	the DNA strand (1 or -1) on which the transcript/feature lies	STRAND 	AA_AF 	 Frequency of existing variant in NHLBI-ESP African American population
+FLAGS	transcript quality flags: cds_start_NF: CDS 5' incomplete; cds_end_NF: CDS 3' incomplete	FLAGS 	EA_AF 	 Frequency of existing variant in NHLBI-ESP European American population
+BIOTYPE	Biotype of transcript or regulatory feature	BIOTYPE 	gnomAD_AF 	 Frequency of existing variant in gnomAD exomes combined population
+CANONICAL	a flag indicating if the transcript is denoted as the canonical transcript for this gene	CANONICAL 	gnomAD_AFR_AF 	 Frequency of existing variant in gnomAD exomes African/American population
+SOURCE			gnomAD_AMR_AF 	 Frequency of existing variant in gnomAD exomes American population
+GENE_PHENO	Indicates if overlapped gene is associated with a phenotype, disease or trait	GENE_PHENO 	gnomAD_ASJ_AF 	 Frequency of existing variant in gnomAD exomes Ashkenazi Jewish population
+SIFT	the SIFT prediction and/or score, with both given as prediction(score)	SIFT 	gnomAD_EAS_AF 	 Frequency of existing variant in gnomAD exomes East Asian population
+PolyPhen	the PolyPhen prediction and/or score	PolyPhen 	gnomAD_FIN_AF 	 Frequency of existing variant in gnomAD exomes Finnish population
+INTRON	the intron number (out of total number)	INTRON 	gnomAD_NFE_AF 	 Frequency of existing variant in gnomAD exomes Non-Finnish European population
+EXON	the exon number (out of total number)	EXON 	gnomAD_OTH_AF 	 Frequency of existing variant in gnomAD exomes combined other combined populations
+AF	Frequency of existing variant in 1000 Genomes	AF 	gnomAD_SAS_AF 	 Frequency of existing variant in gnomAD exomes South Asian population
+AFR_AF	Frequency of existing variant in 1000 Genomes combined African population	AFR_AF 	MAX_AF 	 Maximum observed allele frequency in 1000 Genomes, ESP and gnomAD
+AMR_AF	Frequency of existing variant in 1000 Genomes combined American population	AMR_AF 	MAX_AF_POPS 	 Populations in which maximum allele frequency was observed
+EAS_AF	Frequency of existing variant in 1000 Genomes combined East Asian population	EAS_AF 		
+EUR_AF	Frequency of existing variant in 1000 Genomes combined European population	EUR_AF 		
+SAS_AF	Frequency of existing variant in 1000 Genomes combined South Asian population	SAS_AF 	APPRIS 	 Annotates alternatively spliced transcripts as primary or alternate based on a range of computational methods. NB: not available for GRCh37
+CLIN_SIG	ClinVar clinical significance of the dbSNP variant	CLIN_SIG 	TSL 	 Transcript support level. NB: not available for GRCh37
+SOMATIC	Somatic status of existing variant(s); multiple values correspond to multiple values in the Existing_variation field	SOMATIC 	PUBMED 	 Pubmed ID(s) of publications that cite existing variant
+PHENO	Indicates if existing variant is associated with a phenotype, disease or trait; multiple values correspond to multiple values in the Existing_variation field	PHENO 		
+MOTIF_NAME	the source and identifier of a transcription factor binding profile aligned at this position	MOTIF_NAME 		
+MOTIF_POS	The relative position of the variation in the aligned TFBP	MOTIF_POS 		
+HIGH_INF_POS	a flag indicating if the variant falls in a high information position of a transcription factor binding profile (TFBP)	HIGH_INF_POS 	ALLELE_NUM 	 Allele number from input; 0 is reference, 1 is first alternate etc
+MOTIF_SCORE_CHANGE	The difference in motif score of the reference and variant sequences for the TFBP	MOTIF_SCORE_CHANGE 	MINIMISED 	 Alleles in this variant have been converted to minimal representation before consequence calculation
+OREGgene_symbol	Gene symbol in the OregAnno database	OREGgene_symbol	PICK 	 indicates if this block of consequence data was picked by --flag_pick or –flag_pick_allele
+OREGstrand	Strand where the variant occurs according to OregAnno database	OREGstrand	BAM_EDIT 	 Indicates success or failure of edit using BAM file
+OREGtype	Regulatory type (e.g Transcription factor binding site)	OREGtype	GIVEN_REF 	 Reference allele from input
+OREGexperimental_outcome	Each record is associated to a positive, neutral or negative outcome based on the experimental results from the primary reference.	OREGexperimental_outcome	USED_REF 	 Reference allele as used to get consequences
+OREGdatabase_ID	OregAnno record ID	OREGdatabase_ID		
+OREGNCBI	Pubmed accession for publication supporting variant	OREGNCBI		
+DEgene_symbol	Gene symbol in the Disease Enhancer  database	DEgene_symbol		
+DEdisease	Associated disease	DEdisease		
+DEdatabase_ID	Disease Enhancer data base ID	DEdatabase_ID		
+FANTOM_Enhancer	Enhancer coordinates according to FANTOM database	FANTOM_Enhancer		
+FANTOM_Promoter	Promoter coordinates according to FANTOM database	FANTOM_Promoter		

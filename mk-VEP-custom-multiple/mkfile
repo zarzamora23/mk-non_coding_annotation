@@ -74,7 +74,9 @@ results/%.DiseaseEnhancer_column.tmp.txt: results/%.columns.tmp.tsv
 	##execute an awk loop on the colum labeled as "DiseaseEnhancer" to merge every third comma delimited field into a common field 
 	#Create one column for disease enhancer, add DE to this database fields and delete [DisEnhancer]
 	awk -vcol=DiseaseEnhancer -F $'\t' 'BEGIN {OFS=FS} (NR==1){colnum=$vcol;for(i=1;i<=NF;i++)if($(i)==col)colnum=i;} {print $(colnum)}' $prereq \
-	| tail -n +2 | awk -F, '{for(i=1;i<=NF;i+=3)printf "%s%s", $i, (i+3>=NF?"\t":FS)}; \
+	| tail -n +2 \
+	|sed 's/^-$/-,-,-/g'\
+	| awk -F, '{for(i=1;i<=NF;i+=3)printf "%s%s", $i, (i+3>=NF?"\t":FS)}; \
         {for(i=2;i<=NF;i+=3)printf "%s%s", $i, (i+3>NF?"\t":FS)}; \
         {for(i=3;i<=NF;i+=3)printf "%s%s", $i, (i+3>NF?"\n":FS)}' \
 	| sed '1 i\DEgene_symbol\tDEdisease\tDEdatabase_ID' \
@@ -88,10 +90,14 @@ results/%.Oregano_column.tmp.txt: results/%.columns.tmp.tsv
 	set -x
 	mkdir -p `dirname $target`
 	mkdir -p QC
-	##need to delete first line with tail
+	##need to delete first line with tail,
+	##replace single "-" with 6x "-" with sed 
 	##execute an awk loop on the colum labeled as "ORegAnno" to merge every sixth comma delimited field into a common field 
 	##create header inserting a line with sed, Add "OREG" to ORegAnno database fields and delete [ORegAnno] from last field
-	awk -vcol=ORegAnno -F $'\t' 'BEGIN {OFS=FS} (NR==1){colnum=$vcol;for(i=1;i<=NF;i++)if($(i)==col)colnum=i;} {print $(colnum)}' $prereq | tail -n +2 | awk -F, '{for(i=1;i<=NF;i+=6)printf "%s%s", $i, (i+6>=NF?"\t":FS)}; \
+	awk -vcol=ORegAnno -F $'\t' 'BEGIN {OFS=FS} (NR==1){colnum=$vcol;for(i=1;i<=NF;i++)if($(i)==col)colnum=i;} {print $(colnum)}' $prereq \
+	| tail -n +2 \
+	|sed 's/^-$/-,-,-,-,-,-/g'\
+	| awk -F, '{for(i=1;i<=NF;i+=6)printf "%s%s", $i, (i+6>=NF?"\t":FS)}; \
         {for(i=2;i<=NF;i+=6)printf "%s%s", $i, (i+6>NF?"\t":FS)}; \
         {for(i=3;i<=NF;i+=6)printf "%s%s", $i, (i+6>NF?"\t":FS)}; \
         {for(i=4;i<=NF;i+=6)printf "%s%s", $i, (i+6>NF?"\t":FS)}; \
@@ -121,6 +127,11 @@ results/%.columns.tmp.tsv: results/%.vep.custom_multiple.tsv
 #get custom annotation in tsv
 # ============================================
 #
+##IMPORTANT make sure that the input is ordered by chromosome, otherwise the analysis will produce a truncated output file.
+##To sort: 
+##TAB=`echo -e "\t"
+##sort -t"$TAB" -k1,1 -k2,2 -k3,3 -k4,4 data/prefix_preliminar.vcf > data/prefix.vcf
+##bgzip -c data/prefix.vcf > data/prefix.vcf.gz
 
 results/%.vep.custom_multiple.tsv: data/%.vcf.gz
 	set -x
@@ -131,12 +142,14 @@ results/%.vep.custom_multiple.tsv: data/%.vcf.gz
 	-custom $DB02,$DESCRIPTION2,bed,overlap,0 \
 	-custom $DB03,$DESCRIPTION3,bed,overlap,0 \
 	-custom $DB04,$DESCRIPTION4,bed,overlap,0 \
-	--stats_file QC/disease_vars.custom_plus.stats.html \
+	--stats_file QC/$stem.custom_plus.stats.html \
 	--cache --offline \
 	--dir $VEPconfig --assembly $GENOME_VERSION \
 	--species "homo_sapiens" \
 	--af --af_1kg \
 	--gene_phenotype \
+	--polyphen p \
+	--sift p \
 	--canonical \
 	--check_existing \
 	--exclude_null_alleles \
@@ -144,4 +157,34 @@ results/%.vep.custom_multiple.tsv: data/%.vcf.gz
 	--biotype --tab --buffer_size 10000 \
 	&&mv $target.build $target
 
+#get custom annotation in vcf
+# ============================================
+#
+
+results/%.vep.custom_multiple.vcf: data/%.vcf.gz
+	set -x
+	mkdir -p `dirname $target`
+	mkdir -p QC
+	$VEP -i data/$stem.vcf.gz -o $target.build \
+ 	-custom $DB01,$DESCRIPTION1,bed,overlap,0 \
+	-custom $DB02,$DESCRIPTION2,bed,overlap,0 \
+	-custom $DB03,$DESCRIPTION3,bed,overlap,0 \
+	-custom $DB04,$DESCRIPTION4,bed,overlap,0 \
+	--stats_file QC/$stem.custom_plus.stats.txt \
+	--stats_text \
+	--cache --offline \
+	--dir $VEPconfig --assembly $GENOME_VERSION \
+	--species "homo_sapiens" \
+	--af --af_1kg \
+	--gene_phenotype \
+	--polyphen p \
+	--sift p \
+	--canonical \
+	--check_existing \
+	--exclude_null_alleles \
+	--pick --numbers --regulatory \
+	--vcf_info_field ANN \
+	--vcf \
+	--biotype --buffer_size 10000 \
+	&&mv $target.build $target
 

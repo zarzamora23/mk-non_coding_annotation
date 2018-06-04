@@ -1,0 +1,1 @@
+WARNING: Alleles look like an insertion (-/C) but coordinates are not start = end + 1 (START=123340432, END=123340432) on line 55

@@ -1,0 +1,95 @@
+[VEP run statistics]
+VEP version (API)	 92 (92)
+Annotation sources	Cache: /home/user/.vep/homo_sapiens/92_GRCh37; Custom: /home/user/Projects/non_coding/non_coding_DB/ORegAnno_2015.hg19.bed.gz (overlap); Custom: /home/user/Projects/non_coding/non_coding_DB/enh2disease-1_0_2.bed.gz (overlap); Custom: /home/user/Projects/non_coding/non_coding_DB/enhancer_data_at_2018-05-08_22-04-44.bed.gz (overlap); Custom: /home/user/Projects/non_coding/non_coding_DB/promoter_data_at_2018-05-08_22-08-24.bed.gz (overlap)
+Species	homo_sapiens
+Command line options	--af --af_1kg --assembly GRCh37 --biotype --buffer_size 10000 --cache --canonical --check_existing --custom /home/user/Projects/non_coding/non_coding_DB/ORegAnno_2015.hg19.bed.gz,ORegAnno,bed,overlap,0 --custom /home/user/Projects/non_coding/non_coding_DB/enh2disease-1_0_2.bed.gz,DiseaseEnhancer,bed,overlap,0 --custom /home/user/Projects/non_coding/non_coding_DB/enhancer_data_at_2018-05-08_22-04-44.bed.gz,FANTOM_Enhancer,bed,overlap,0 --custom /home/user/Projects/non_coding/non_coding_DB/promoter_data_at_2018-05-08_22-08-24.bed.gz,FANTOM_Promoter,bed,overlap,0 --dir /home/user/.vep --exclude_null_alleles --gene_phenotype --input_file data/disease_SNPs.vcf.gz --numbers --offline --output_file results/disease_SNPs.vep.custom_multiple.vcf.build --pick --polyphen p --regulatory --sift p --species homo_sapiens --stats_file QC/disease_SNPs.custom_plus.stats.txt --stats_text --vcf --vcf_info_field ANN
+Start time	2018-05-31 16:50:30
+End time	2018-05-31 16:50:52
+Run time	22 seconds
+Input file	data/disease_SNPs.vcf.gz
+Output file	results/disease_SNPs.vep.custom_multiple.vcf.build
+
+[General statistics]
+Lines of input read	593
+Variants processed	591
+Variants filtered out	0
+Novel / existing variants	295 (49.9) / 296 (50.1)
+Overlapped genes	228
+Overlapped transcripts	229
+Overlapped regulatory features	11
+
+[Variant classes]
+deletion	1
+SNV	590
+
+[Consequences (most severe)]
+missense_variant	4
+synonymous_variant	2
+5_prime_UTR_variant	27
+3_prime_UTR_variant	5
+non_coding_transcript_exon_variant	21
+intron_variant	309
+upstream_gene_variant	70
+downstream_gene_variant	46
+regulatory_region_variant	19
+intergenic_variant	88
+
+[Consequences (all)]
+missense_variant	3
+synonymous_variant	2
+5_prime_UTR_variant	23
+3_prime_UTR_variant	5
+non_coding_transcript_exon_variant	1
+intron_variant	300
+non_coding_transcript_variant	59
+upstream_gene_variant	98
+downstream_gene_variant	52
+regulatory_region_variant	19
+intergenic_variant	71
+
+[Coding consequences]
+missense_variant	3
+synonymous_variant	2
+
+[SIFT summary]
+tolerated	3
+
+[PolyPhen summary]
+benign	3
+
+[Variants by chromosome]
+1	42
+2	24
+3	20
+4	20
+5	29
+6	64
+7	37
+8	54
+9	28
+10	76
+11	32
+12	21
+13	7
+14	6
+15	9
+16	14
+17	24
+18	7
+19	9
+20	38
+21	9
+22	11
+X	10
+
+[Position in protein]
+00-10%	1
+10-20%	2
+20-30%	0
+30-40%	1
+40-50%	0
+50-60%	0
+60-70%	1
+70-80%	0
+80-90%	0
+90-100%	0

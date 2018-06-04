@@ -16,3 +16,9 @@ find -L data/ \
         -e "s#^data/#results/#" \
         -e "s#.vcf.gz#.vep.custom_reformatted.tsv#"
 
+find -L data/ \
+        -name '*.vcf.gz' \
+| sed \
+        -e "s#^data/#results/#" \
+        -e "s#.vcf.gz#.vep.custom_multiple.vcf#"
+
