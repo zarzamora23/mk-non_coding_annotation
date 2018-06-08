@@ -23,17 +23,35 @@ MKSHELL=/bin/bash
 #read in config file
 < config.mk
 
-#Merge output from intermediate steps
-# ============================================
-#
-results/%.vep.custom_reformatted.tsv: results/%.columns.tmp.tsv results/%.FANTOM_Promoter_column.tmp.txt results/%.FANTOM_Enhancer_column.tmp.txt results/%.DiseaseEnhancer_column.tmp.txt results/%.Oregano_column.tmp.txt
+#Get variants that failed to be annotated and printed to the tsv ouput file
+QC/%.failed_variants.txt: results/%.vep.custom_reformatted.tsv results/%.vep.custom_multiple.vcf
 	set -x
 	mkdir -p `dirname $target`
 	mkdir -p QC
-	#Exclude last 4 columns using awk
+	#get column with variant ID from tsv file with grep, remove 'Uploaded_variation', sort it	
+	awk '{print $1}' results/$stem.vep.custom_reformatted.tsv \
+	| grep -v 'Uploaded_variation' \
+	| sort	> QC/$stem.tsv_variants.txt
+	#get lines not starting with comment, get column with variant ID from tsv file with grep, sort it	
+	grep "^[^#]" results/$stem.vep.custom_multiple.vcf \
+	| awk '{print $3}' \
+	| sort > QC/$stem.vcf_variants.txt
+	#join files and print only variants that are in vcf file but not in tsv	
+	join -v 2 QC/$stem.tsv_variants.txt QC/$stem.vcf_variants.txt > $target.build \
+	&&mv $target.build $target
+
+
+#Merge output from intermediate steps
+# ============================================
+#
+results/%.vep.custom_reformatted.tsv: results/%.columns.tmp.tsv results/%.FANTOM_Promoter_column.tmp.txt results/%.FANTOM_Enhancer_column.tmp.txt results/%.DiseaseEnhancer_column.tmp.txt results/%.ORegAnno_column.tmp.txt
+	set -x
+	mkdir -p `dirname $target`
+	mkdir -p QC
+	#Exclude last 4 columns, which contain the output from the custom databases, using awk, to keep only VEP output
 	awk -F $'\t' 'BEGIN {OFS=FS} NF{NF-=4};1' results/$stem.columns.tmp.tsv > results/$stem.only_VEP_columns.tmp.tsv
 	#paste vep annotaion and reformatted custom annotation
-	paste results/$stem.only_VEP_columns.tmp.tsv results/$stem.Oregano_column.tmp.txt results/$stem.DiseaseEnhancer_column.tmp.txt results/$stem.FANTOM_Enhancer_column.tmp.txt results/$stem.FANTOM_Promoter_column.tmp.txt > $target.build \
+	paste results/$stem.only_VEP_columns.tmp.tsv results/$stem.ORegAnno_column.tmp.txt results/$stem.DiseaseEnhancer_column.tmp.txt results/$stem.FANTOM_Enhancer_column.tmp.txt results/$stem.FANTOM_Promoter_column.tmp.txt > $target.build \
 	&&mv $target.build $target
 	#rm results/$stem.*.tmp.*
 
@@ -86,7 +104,7 @@ results/%.DiseaseEnhancer_column.tmp.txt: results/%.columns.tmp.tsv
 #Create one column for ORegAnno database
 # ============================================
 #
-results/%.Oregano_column.tmp.txt: results/%.columns.tmp.tsv
+results/%.ORegAnno_column.tmp.txt: results/%.columns.tmp.tsv
 	set -x
 	mkdir -p `dirname $target`
 	mkdir -p QC
@@ -107,7 +125,7 @@ results/%.Oregano_column.tmp.txt: results/%.columns.tmp.tsv
 	| sed 's/\[ORegAnno\]//g' > $target.build \
 	&&mv $target.build $target
 
-#Delete unnecesary headers and fill empty fields with .
+#Delete unnecesary headers
 # ============================================
 #
 
@@ -115,11 +133,7 @@ results/%.columns.tmp.tsv: results/%.vep.custom_multiple.tsv
 	set -x
 	mkdir -p `dirname $target`
 	mkdir -p QC
-	##Print line including pattern and after it(sed), delete symbol #. 
-	######and add '.' to cells without custom annotation (awk)
-        ##awk: define variable specifying column name, delimiting characater, 
-	##search that column and make it equivalent to column number, replace '-' at the start of column and replace with 
-	##'.' as needed , in the working field 
+	##Print line including pattern and all lines after it(sed), delete symbol #.  
 	sed -n -e '/#Uploaded_variation/,$p' $prereq \
 	| sed -e 's/^#//g' > $target.build \
 	&&mv $target.build $target
@@ -142,15 +156,18 @@ results/%.vep.custom_multiple.tsv: data/%.vcf.gz
 	-custom $DB02,$DESCRIPTION2,bed,overlap,0 \
 	-custom $DB03,$DESCRIPTION3,bed,overlap,0 \
 	-custom $DB04,$DESCRIPTION4,bed,overlap,0 \
-	--stats_file QC/$stem.custom_plus.stats.html \
+	--stats_file QC/$stem.custom.stats.html \
 	--cache --offline \
 	--dir $VEPconfig --assembly $GENOME_VERSION \
 	--species "homo_sapiens" \
 	--af --af_1kg \
 	--gene_phenotype \
+	--variant_class \
 	--polyphen p \
 	--sift p \
 	--canonical \
+	--allow_non_variant \
+	--dont_skip \
 	--check_existing \
 	--exclude_null_alleles \
 	--pick --numbers --regulatory \
@@ -170,16 +187,19 @@ results/%.vep.custom_multiple.vcf: data/%.vcf.gz
 	-custom $DB02,$DESCRIPTION2,bed,overlap,0 \
 	-custom $DB03,$DESCRIPTION3,bed,overlap,0 \
 	-custom $DB04,$DESCRIPTION4,bed,overlap,0 \
-	--stats_file QC/$stem.custom_plus.stats.txt \
+	--stats_file QC/$stem.custom.stats.txt \
 	--stats_text \
 	--cache --offline \
 	--dir $VEPconfig --assembly $GENOME_VERSION \
 	--species "homo_sapiens" \
 	--af --af_1kg \
 	--gene_phenotype \
+	--variant_class \
 	--polyphen p \
 	--sift p \
 	--canonical \
+	--allow_non_variant \
+        --dont_skip \
 	--check_existing \
 	--exclude_null_alleles \
 	--pick --numbers --regulatory \

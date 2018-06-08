@@ -17,7 +17,7 @@ MKSHELL=/bin/bash
 ##      Eugenia Zarza (eugenia.zarza@gmail.com), for Winter Genomics (http://www.wintergenomics.com/) - 2018
 
 ## Load configurations from file
-## Config file contains paths to xhmm executables
+## The genome version to be used in indicated in the Config file 
 < config.mk
 
 # Index bed file

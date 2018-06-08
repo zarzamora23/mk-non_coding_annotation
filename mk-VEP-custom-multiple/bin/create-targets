@@ -22,3 +22,9 @@ find -L data/ \
         -e "s#^data/#results/#" \
         -e "s#.vcf.gz#.vep.custom_multiple.vcf#"
 
+find -L data/ \
+	-name '*.vcf.gz' \
+| sed \
+        -e "s#^data/#QC/#" \
+        -e "s#.vcf.gz#.failed_variants.txt#"
+

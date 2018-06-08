@@ -51,6 +51,8 @@ FGFR2/FGER2	Breast_cancer	DE_00538
 FGFR2/FGER2	Breast_cancer	DE_00538
 FGFR2/FGER2	Breast_cancer	DE_00538
 FGFR2/FGER2	Breast_cancer	DE_00538
+FGFR2/FGER2	Breast_cancer	DE_00538
+FGFR2/FGER2	Breast_cancer	DE_00538
 UROS	Porphyria	DE_00030
 PTF1A,PTF1A,PTF1A,PTF1A,PTF1A,PTF1A,PTF1A	Pancreatic_agenesis,Isolated_pancreatic_agenesis,Pancreatic_agenesis,Pancreatic_agenesis,Pancreatic_agenesis,Isolated_pancreatic_agenesis,Pancreatic_agenesis	DE_00031,DE_00033,DE_00032,DE_00034,DE_00035,DE_00037,DE_00036
 PTF1A,PTF1A,PTF1A,PTF1A,PTF1A,PTF1A,PTF1A	Pancreatic_agenesis,Isolated_pancreatic_agenesis,Pancreatic_agenesis,Pancreatic_agenesis,Pancreatic_agenesis,Isolated_pancreatic_agenesis,Pancreatic_agenesis	DE_00031,DE_00033,DE_00032,DE_00034,DE_00035,DE_00037,DE_00036
