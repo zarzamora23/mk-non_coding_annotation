@@ -132,18 +132,25 @@ mk-non-custom-annotation-master/		##Pipeline main directory.
 
 [1]: https://www.ncbi.nlm.nih.gov/pubmed/20628352
 1. [Alexander RP, Fang G, Rozowsky J, Snyder M, Gerstein MB. Annotating non-coding regions of the genome. Nat Rev Genet. 2010 Aug;11(8):559-71. doi: 10.1038/nrg2814. PubMed PMID: 20628352.][1]
+
 [2]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5529005/
 2. [Zhu Y, Tazearslan C, Suh Y. Challenges and progress in interpretation of non-coding genetic variants associated with human disease. Experimental Biology and Medicine. 2017;242(13):1325-1334. doi:10.1177/1535370217713750.][2]
+
 [3]: https://www.ncbi.nlm.nih.gov/pubmed/27268795
 3. [McLaren W, Gil L, Hunt SE, et al. The Ensembl Variant Effect Predictor. Genome Biology. 2016;17:122. doi:10.1186/s13059-016-0974-4.][3]
+
 [4]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5215096/
 4. [Andersson R, Gebhard C, Miguel-Escalada I, et al. An atlas of active enhancers across human cell types and tissues. Nature. 2014;507(7493):455-461. doi:10.1038/nature12787.][4]
+
 [5]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5199134/
 5. [Ienasescu, H., et al. (2016). On-the-fly selection of cell-specific enhancers, genes, miRNAs and proteins across the human body using SlideBase, Database 2016, doi: 10.1093/database/baw144][5]
+
 [6]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4529748/
 6. [The FANTOM Consortium and the RIKEN PMI and CLST (DGT). A promoter-level mammalian expression atlas. Nature. 2014;507(7493):462-470. doi:10.1038/nature13182.][6]
+
 [7]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5753380/
 7. [Zhang G, Shi J, Zhu S, et al. DiseaseEnhancer: a resource of human disease-associated enhancer catalog. Nucleic Acids Research. 2018;46(Database issue):D78-D84. doi:10.1093/nar/gkx920.][7]
+
 [8]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4702855/
 8. [Lesurf R, Cotto KC, Wang G, et al. ORegAnno 3.0: a community-driven resource for curated regulatory annotation. Nucleic Acids Research. 2016;44(Database issue):D126-D132. doi:10.1093/nar/gkv1203][8]
 
